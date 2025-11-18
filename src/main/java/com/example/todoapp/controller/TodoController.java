@@ -54,4 +54,11 @@ public class TodoController {
         model.addAttribute("todo", todo);
         return "detail";
     }
+
+    @GetMapping("/todos/{id}/delete")
+    public String delete(@PathVariable Long id, Model model) {
+        // 삭제 로직
+        todoRepository.deleteById(id);
+        return "redirect:/todos";
+    }
 }
