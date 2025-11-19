@@ -4,13 +4,12 @@ import com.example.todoapp.dto.TodoDto;
 import com.example.todoapp.repository.TodoRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Controller
+@RequestMapping("/todos")
 public class TodoController {
 //    private final TodoRepository todoRepository = new TodoRepository();
     private final TodoRepository todoRepository;
@@ -19,7 +18,7 @@ public class TodoController {
         this.todoRepository = todoRepository;
     }
 
-    @GetMapping("/todos")
+    @GetMapping
     public String todos(Model model) {
         // 이 전에 만들었던 repository와 다른 객체를 사용하면 안됨.
         // TodoRepository todoRepository = new TodoRepository();
@@ -28,12 +27,13 @@ public class TodoController {
         return "todos";
     }
 
-    @GetMapping("/todos/new")
+    @GetMapping("/new")
     public String newTodo(){ //new 단축어 있어서 newTodo로 대체.
         return "new";
     }
 
-    @GetMapping("/todos/create")
+//    @GetMapping("/create")
+    @PostMapping
     public String create(
             @RequestParam String title,
             @RequestParam String content,
@@ -48,7 +48,7 @@ public class TodoController {
         return "redirect:/todos";
     }
 
-    @GetMapping("/todos/{id}")
+    @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
 //        TodoDto todo = todoRepository.findById(id);
 
@@ -64,28 +64,28 @@ public class TodoController {
 
     }
 
-    @GetMapping("/todos/{id}/delete")
+    @GetMapping("/{id}/delete")
     public String delete(@PathVariable Long id, Model model) {
         // 삭제 로직
         todoRepository.deleteById(id);
         return "redirect:/todos";
     }
 
-    @GetMapping("/todos/{id}/edit")
+    @GetMapping("/{id}/update")
     public String edit(@PathVariable Long id, Model model) {
 //        TodoDto todo = todoRepository.findById(id);
         try{
             TodoDto todo = todoRepository.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("todo not found!!"));
             model.addAttribute("todo", todo);
-            return "edit";
+            return "update";
 
         } catch (IllegalArgumentException e) {
             return "redirect:/todos";
         }
     }
 
-    @GetMapping("/todos/{id}/update")
+    @PostMapping("/{id}/update")
     public String update(
             @PathVariable Long id,
             @RequestParam String title,
@@ -111,7 +111,7 @@ public class TodoController {
 
     }
 
-    @GetMapping("/todos/search")
+    @GetMapping("/search")
     public String search(@RequestParam String keyword, Model model) {
         List<TodoDto> todos = todoRepository.findByTitleContaining(keyword);
 
@@ -119,17 +119,30 @@ public class TodoController {
         return "todos";
     }
 
-    @GetMapping("/todos/active")
+    @GetMapping("/active")
     public String active(Model model) {
         List<TodoDto> todos = todoRepository.findByCompleted(false);
         model.addAttribute("todos", todos);
         return "todos";
     }
 
-    @GetMapping("/todos/completed")
+    @GetMapping("/completed")
     public String completed(Model model) {
         List<TodoDto> todos = todoRepository.findByCompleted(true);
         model.addAttribute("todos", todos);
         return "todos";
+    }
+
+    @GetMapping("/{id}/toggle")
+    public String toggle(@PathVariable Long id, Model model) {
+        try {
+            TodoDto todo = todoRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("todo not found!!"));
+            todo.setCompleted(!todo.isCompleted());
+            todoRepository.save(todo);
+            return "redirect:/todos/" + id;
+        } catch(IllegalArgumentException e) {
+            return "redirect:/todos";
+        }
     }
 }
