@@ -110,4 +110,12 @@ public class TodoController {
         }
 
     }
+
+    @GetMapping("/todos/search")
+    public String search(@RequestParam String keyword, Model model) {
+        List<TodoDto> todos = todoRepository.findByTitleContaining(keyword);
+
+        model.addAttribute("todos", todos);
+        return "todos";
+    }
 }
