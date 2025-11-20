@@ -13,12 +13,6 @@ import java.util.List;
 @Controller
 @RequestMapping("/todos")
 public class TodoController {
-//    private final TodoRepository todoRepository = new TodoRepository();
-//    private final TodoRepository todoRepository;
-
-//    public TodoController(TodoRepository todoRepository) {
-//        this.todoRepository = todoRepository;
-//    }
 
     private final TodoService todoService;
 
@@ -28,9 +22,6 @@ public class TodoController {
 
     @GetMapping
     public String todos(Model model) {
-        // 이 전에 만들었던 repository와 다른 객체를 사용하면 안됨.
-        // TodoRepository todoRepository = new TodoRepository();
-//        List<TodoDto> todos = todoRepository.findAll();
         List<TodoDto> todos = todoService.getAllTodos();
         model.addAttribute("todos", todos);
         model.addAttribute("totalCount", todoService.getTotalCount());
@@ -48,24 +39,13 @@ public class TodoController {
 //    @GetMapping("/create")
     @PostMapping
     public String create(
-//            @RequestParam String title,
-//            @RequestParam String content,
             @ModelAttribute TodoDto todo,
             RedirectAttributes redirectAttributes
-//            Model model
     ){
-//        TodoDto todoDto = new TodoDto(null, title, content, false);
-//        TodoRepository todoRepository = new TodoRepository();
-
-//        TodoDto todo = todoRepository.save(todoDto);
-//        todoRepository.save(todo);
-//        model.addAttribute("todo", todo);
-
         try {
             todoService.createTodo(todo);
             redirectAttributes.addFlashAttribute("message", "할 일이 생성되었습니다.");
 
-//        return "create";
             return "redirect:/todos";
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -76,11 +56,8 @@ public class TodoController {
 
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model) {
-//        TodoDto todo = todoRepository.findById(id);
 
         try {
-//            TodoDto todo = todoRepository.findById(id)
-//                    .orElseThrow(() -> new IllegalArgumentException("todo not found!!"));
             TodoDto todo = todoService.getTodoById(id);
             model.addAttribute("todo", todo);
             return "detail";
@@ -97,7 +74,6 @@ public class TodoController {
             RedirectAttributes redirectAttributes,
             Model model) {
         // 삭제 로직
-//        todoRepository.deleteById(id);
         todoService.deleteTodoById(id);
         redirectAttributes.addFlashAttribute("message", "할 일이 삭제되었습니다.");
         redirectAttributes.addFlashAttribute("status", "delete");
@@ -106,10 +82,7 @@ public class TodoController {
 
     @GetMapping("/{id}/update")
     public String edit(@PathVariable Long id, Model model) {
-//        TodoDto todo = todoRepository.findById(id);
         try{
-//            TodoDto todo = todoRepository.findById(id)
-//                    .orElseThrow(() -> new IllegalArgumentException("todo not found!!"));
             TodoDto todo = todoService.getTodoById(id);
             model.addAttribute("todo", todo);
             return "form";
@@ -122,23 +95,10 @@ public class TodoController {
     @PostMapping("/{id}/update")
     public String update(
             @PathVariable Long id,
-//            @RequestParam String title,
-//            @RequestParam String content,
-//            @RequestParam(defaultValue = "false") Boolean completed,
             @ModelAttribute TodoDto todo,
             RedirectAttributes redirectAttributes,
             Model model) {
-//        TodoDto todo = todoRepository.findById(id);
         try {
-//            TodoDto todo = todoRepository.findById(id)
-//                    .orElseThrow(() -> new IllegalArgumentException("todo not found!!"));
-//
-//            todo.setTitle(title);
-//            todo.setContent(content);
-//            todo.setCompleted(completed);
-
-//            todo.setId(id);
-//            todoRepository.save(todo);
             todoService.upDateTodoById(id, todo);
 
             redirectAttributes.addFlashAttribute("message", "할 일이 수정되었습니다.");
@@ -154,7 +114,6 @@ public class TodoController {
 
     @GetMapping("/search")
     public String search(@RequestParam String keyword, Model model) {
-//        List<TodoDto> todos = todoRepository.findByTitleContaining(keyword);
         List<TodoDto> todos = todoService.searchTodos(keyword);
         model.addAttribute("todos", todos);
         return "todos";
@@ -162,7 +121,6 @@ public class TodoController {
 
     @GetMapping("/active")
     public String active(Model model) {
-//        List<TodoDto> todos = todoRepository.findByCompleted(false);
         List<TodoDto> todos = todoService.getTodosByCompleted(false);
         model.addAttribute("todos", todos);
         return "todos";
@@ -170,7 +128,6 @@ public class TodoController {
 
     @GetMapping("/completed")
     public String completed(Model model) {
-//        List<TodoDto> todos = todoRepository.findByCompleted(true);
         List<TodoDto> todos = todoService.getTodosByCompleted(false);
         model.addAttribute("todos", todos);
         return "todos";
@@ -179,10 +136,6 @@ public class TodoController {
     @GetMapping("/{id}/toggle")
     public String toggle(@PathVariable Long id, Model model) {
         try {
-//            TodoDto todo = todoRepository.findById(id)
-//                    .orElseThrow(() -> new IllegalArgumentException("todo not found!!"));
-//            todo.setCompleted(!todo.isCompleted());
-//            todoRepository.save(todo);
             todoService.toggleCompleted(id);
             return "redirect:/todos/" + id;
         } catch(IllegalArgumentException e) {
@@ -192,18 +145,8 @@ public class TodoController {
 
     @GetMapping("/delete-completed")
     public String deleteCompleted(RedirectAttributes redirectAttributes) {
-        // delete all
         todoService.deleteCompletedTodos();
         redirectAttributes.addFlashAttribute("message", "완료된 할일 삭제");
         return "redirect:/todos";
     }
-
-    // 1. 제목 검증 추가
-    // - 제목이 비어있으면 예외
-    // - 제목이 50자 초과 시 예외
-
-    // 2. 통계 기능 추가
-    // - 전체, 완료된, 미완료 할일 개수 => /todos에 표시
-
-    // 3. 완료된 할 일 일괄 삭제
 }
