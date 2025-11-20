@@ -68,4 +68,21 @@ public class TodoService {
             throw new IllegalArgumentException("제목은 50자를 초과할 수 없습니다.");
         }
     }
+
+    public long getTotalCount() {
+        return todoRepository.findAll().size();
+    }
+
+    public long getCompletedCount() {
+        return todoRepository.findByCompleted(true).size();
+    }
+
+    public long getActiveCount() {
+        return todoRepository.findByCompleted(false).size();
+    }
+
+    public void deleteCompletedTodos() {
+//        todoRepository.findByCompleted(true);
+        todoRepository.deleteCompleted();
+    }
 }

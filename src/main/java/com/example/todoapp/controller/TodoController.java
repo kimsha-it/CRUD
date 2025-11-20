@@ -33,6 +33,9 @@ public class TodoController {
 //        List<TodoDto> todos = todoRepository.findAll();
         List<TodoDto> todos = todoService.getAllTodos();
         model.addAttribute("todos", todos);
+        model.addAttribute("totalCount", todoService.getTotalCount());
+        model.addAttribute("completedCount", todoService.getCompletedCount());
+        model.addAttribute("activeCount", todoService.getActiveCount());
         return "todos";
     }
 
@@ -185,6 +188,14 @@ public class TodoController {
         } catch(IllegalArgumentException e) {
             return "redirect:/todos";
         }
+    }
+
+    @GetMapping("/delete-completed")
+    public String deleteCompleted(RedirectAttributes redirectAttributes) {
+        // delete all
+        todoService.deleteCompletedTodos();
+        redirectAttributes.addFlashAttribute("message", "완료된 할일 삭제");
+        return "redirect:/todos";
     }
 
     // 1. 제목 검증 추가
