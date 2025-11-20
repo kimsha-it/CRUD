@@ -7,7 +7,7 @@
 
     <form action="/todos" method="post" th:object="${todo}">
         <label for="title" class="form-label">Title</label>
-        <input id="title" class="form-control" th:field="*{title}">
+        <input  id="title" class="form-control" th:field="*{title}">
         <label for="content" class="form-label">Content</label>
         <input id="content" class="form-control" th:field="*{content}">
         <input type="submit" class="btn btn-primary">

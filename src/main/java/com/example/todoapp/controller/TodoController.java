@@ -57,11 +57,18 @@ public class TodoController {
 //        TodoDto todo = todoRepository.save(todoDto);
 //        todoRepository.save(todo);
 //        model.addAttribute("todo", todo);
-        todoService.createTodo(todo);
-        redirectAttributes.addFlashAttribute("message", "할 일이 생성되었습니다.");
+
+        try {
+            todoService.createTodo(todo);
+            redirectAttributes.addFlashAttribute("message", "할 일이 생성되었습니다.");
 
 //        return "create";
-        return "redirect:/todos";
+            return "redirect:/todos";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/todos/new";
+        }
+
     }
 
     @GetMapping("/{id}")
@@ -179,4 +186,13 @@ public class TodoController {
             return "redirect:/todos";
         }
     }
+
+    // 1. 제목 검증 추가
+    // - 제목이 비어있으면 예외
+    // - 제목이 50자 초과 시 예외
+
+    // 2. 통계 기능 추가
+    // - 전체, 완료된, 미완료 할일 개수 => /todos에 표시
+
+    // 3. 완료된 할 일 일괄 삭제
 }
