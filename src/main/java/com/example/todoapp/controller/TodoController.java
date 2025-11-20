@@ -106,8 +106,13 @@ public class TodoController {
             return "redirect:/todos/" + id;
 
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("message", "없는 할 일입니다.");
-            return "redirect:/todos";
+            if (e.getMessage().contains("제목")) {
+                redirectAttributes.addFlashAttribute("error", e.getMessage());
+                return "redirect:/todos/" + id +"/update";
+            } else {
+                redirectAttributes.addFlashAttribute("message", "없는 할일입니다.");
+                return "redirect:/todos";
+            }
         }
 
     }
