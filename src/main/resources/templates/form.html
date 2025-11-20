@@ -1,0 +1,21 @@
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}"
+>
+<div layout:fragment="content">
+
+    <h1 th:text="${todo.id == null} ? 'new' : 'update'"></h1>
+    <form
+            th:action="@{/todos/{id}/update(id=${todo.id})}"
+            method="post"
+            th:object="${todo}"
+    >
+        <label for="title" class="form-label"></label>
+        <input id="title" class="form-control" th:field="*{title}">
+        <label for="content" class="form-label"></label>
+        <input id="content" class="form-control" th:field="*{content}">
+        <input th:if="${todo.id != null}" type="checkbox" class="form-check-input" th:field="*{completed}">
+        <input type="submit" class="btn btn-primary">
+    </form>
+</div>
