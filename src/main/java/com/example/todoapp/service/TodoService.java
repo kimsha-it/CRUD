@@ -2,6 +2,7 @@ package com.example.todoapp.service;
 
 import com.example.todoapp.dto.TodoDto;
 import com.example.todoapp.entity.TodoEntity;
+import com.example.todoapp.exception.ResourceNotFoundException;
 import com.example.todoapp.repository.TodoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +38,7 @@ public class TodoService {
 
     private TodoEntity findEntityById(Long id) {
         return todoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("todo not found : id" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("not found : id" + id));
     }
 
     public TodoDto getTodoById(Long id) {
